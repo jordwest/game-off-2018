@@ -5,3 +5,4 @@ authors = ["Jordan West <jordwest@gmail.com>"]
 edition = "2018"
 
 [dependencies]
+ggez = "0.4"
