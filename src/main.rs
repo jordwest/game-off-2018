@@ -3,7 +3,8 @@ extern crate nalgebra;
 extern crate ncollide2d;
 extern crate nphysics2d;
 
-use ggez::graphics::{DrawMode, Point2};
+use ggez::graphics::Image;
+use ggez::graphics::{DrawParam, Point2};
 use ggez::*;
 use nalgebra::zero;
 use nalgebra::Isometry2;
@@ -16,14 +17,16 @@ const COLLIDER_MARGIN: f32 = 0.01;
 struct MainState {
     world: World<f32>,
     handle: Option<BodyHandle>,
+    image: Image,
 }
 
 impl MainState {
-    fn new(_ctx: &mut Context) -> GameResult<MainState> {
+    fn new(ctx: &mut Context) -> GameResult<MainState> {
         use nphysics2d::solver::SignoriniCoulombPyramidModel;
         let mut state = MainState {
             world: World::new(),
             handle: None,
+            image: Image::new(ctx, "/bot.png").unwrap(),
         };
         state.world.set_gravity(Vector2::y() * -9.81);
         state.add_ground();
@@ -68,7 +71,7 @@ impl MainState {
             ground_rady - COLLIDER_MARGIN,
         )));
 
-        let ground_pos = Isometry2::new(-Vector2::y() * 300.0, -0.3);
+        let ground_pos = Isometry2::new(-Vector2::y() * 300.0, -0.05);
         self.world.add_collider(
             COLLIDER_MARGIN,
             ground_shape,
@@ -95,7 +98,19 @@ impl event::EventHandler for MainState {
         let body = self.world.rigid_body(h).unwrap();
         let isometry = body.position();
         let pos = isometry.translation.vector;
-        graphics::circle(ctx, DrawMode::Fill, Point2::new(pos.x, -pos.y), 10.0, 0.4)?;
+        let rot = isometry.rotation.angle();
+        graphics::draw_ex(
+            ctx,
+            &self.image,
+            DrawParam {
+                dest: Point2::new(pos.x, -pos.y),
+                rotation: -rot,
+                offset: Point2::new(0.5, 0.5),
+                scale: Point2::new(0.05, 0.05),
+                ..DrawParam::default()
+            },
+        )
+        .unwrap();
         graphics::present(ctx);
         Ok(())
     }

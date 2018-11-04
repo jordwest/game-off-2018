@@ -5,7 +5,10 @@ authors = ["Jordan West <jordwest@gmail.com>"]
 edition = "2018"
 
 [dependencies]
-ggez = "0.4"
 nalgebra = "0.16.8"
 ncollide2d = "0.17.1"
 nphysics2d = "0.9.2"
+
+[dependencies.ggez]
+version = "0.4"
+features = ["cargo-resource-root"]
